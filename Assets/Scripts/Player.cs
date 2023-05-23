@@ -60,21 +60,12 @@ public class Player : NetworkBehaviour {
     }
 
     //Coloreador del Equipo Rojo
-    void ColorizedRed() {
-        int idForTeamRedColor;
-        if (NetworkManager.Singleton.IsServer) {
-            idForTeamRedColor = ColorAcceptRed();
-            meshRenderer.material.color = teamRedColors[idForTeamRedColor];
-            PlayerIdColor.Value = idForTeamRedColor;
-        } else {
-            ColorizedRedServerRpc();
-        }
-    }
-
     [ServerRpc]
     void ColorizedRedServerRpc() {
-        int idForColor = ColorAcceptRed();
-        PlayerIdColor.Value = idForColor;
+        int idForTeamRedColor;
+        idForTeamRedColor = ColorAcceptRed();
+        meshRenderer.material.color = teamRedColors[idForTeamRedColor];
+        PlayerIdColor.Value = idForTeamRedColor;
     }
 
     int ColorAcceptRed() {
@@ -91,21 +82,12 @@ public class Player : NetworkBehaviour {
     } 
 
     //Coloreador del Equipo Azul
-    void ColorizedBlue() {
-        int idForTeamBlueColor;
-        if (NetworkManager.Singleton.IsServer) {
-            idForTeamBlueColor = ColorAcceptBlue();
-            meshRenderer.material.color = teamBlueColors[idForTeamBlueColor];
-            PlayerIdColor.Value = idForTeamBlueColor;
-        } else {
-            ColorizedBlueServerRpc();
-        }
-    }
-
     [ServerRpc]
     void ColorizedBlueServerRpc() {
-        int idForColor = ColorAcceptRed();
-        PlayerIdColor.Value = idForColor;
+        int idForTeamBlueColor;
+        idForTeamBlueColor = ColorAcceptBlue();
+        meshRenderer.material.color = teamBlueColors[idForTeamBlueColor];
+        PlayerIdColor.Value = idForTeamBlueColor;
     }
 
     int ColorAcceptBlue() {
@@ -141,10 +123,10 @@ public class Player : NetworkBehaviour {
             if(inTeam == false) {
                 if(transform.position.x > 5f) {
                     inTeam = true;
-                    ColorizedBlue();
+                    ColorizedBlueServerRpc();
                 } else if(transform.position.x < -5f) {
                     inTeam = true;
-                    ColorizedRed();
+                    ColorizedRedServerRpc();
                 } 
             }
             if (transform.position.x > -5f && transform.position.x < 5f) {
