@@ -131,6 +131,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
+  teamRedColors:
+  - {r: 1, g: 0, b: 0, a: 0}
+  - {r: 1, g: 0.4605794, b: 0, a: 0}
+  - {r: 1, g: 0, b: 0.55868816, a: 0}
+  teamBlueColors:
+  - {r: 0, g: 0.05740881, b: 1, a: 0}
+  - {r: 0, g: 1, b: 0.9193516, a: 0}
+  - {r: 0.42420337, g: 0.0047169924, b: 1, a: 0}
 --- !u!54 &5557749264777719844
 Rigidbody:
   m_ObjectHideFlags: 0
