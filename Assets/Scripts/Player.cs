@@ -13,7 +13,7 @@ public class Player : NetworkBehaviour {
     private Color notTeam = Color.white;
 
     public NetworkVariable<int> PlayerIdColor;
-    private bool inTeam = false;
+    private float inTeam = 0f;
 
     public List<Color> teamRedColors = new List<Color>();
     public List<Color> teamBlueColors = new List<Color>();
@@ -62,7 +62,7 @@ public class Player : NetworkBehaviour {
     //Coloreador del Equipo Rojo
     [ServerRpc]
     void ColorizedRedServerRpc() {
-        int idForTeamRedColor;
+        int idForTeamRedColor = ColorAcceptRed();
         idForTeamRedColor = ColorAcceptRed();
         meshRenderer.material.color = teamRedColors[idForTeamRedColor];
         PlayerIdColor.Value = idForTeamRedColor;
@@ -120,18 +120,18 @@ public class Player : NetworkBehaviour {
             if(Input.GetKey(KeyCode.M)) {
                 PositionZeroZero();
             }
-            if(inTeam == false) {
+            if(inTeam == 0f) {
                 if(transform.position.x > 5f) {
-                    inTeam = true;
+                    inTeam = 1f;
                     ColorizedBlueServerRpc();
                 } else if(transform.position.x < -5f) {
-                    inTeam = true;
+                    inTeam = 1f;
                     ColorizedRedServerRpc();
                 } 
             }
             if (transform.position.x > -5f && transform.position.x < 5f) {
                 meshRenderer.material.color = notTeam;
-                inTeam = false;
+                inTeam = 0f;
             }
         }
     }
