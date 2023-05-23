@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour {
     }
 
     static void SubmitCentralPosition() {
-        if (GUILayout.Button(NetworkManager.Singleton.IsServer ? "Go To The Center" : "Request Go To The Center")) {
+        if (GUILayout.Button(NetworkManager.Singleton.IsServer ? "Mover al Inicio" : "Request Mover al Inicio")) {
             if (NetworkManager.Singleton.IsServer && !NetworkManager.Singleton.IsClient ) {
                 foreach (ulong uid in NetworkManager.Singleton.ConnectedClientsIds)
                     NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(uid).GetComponent<Player>().MoveToCenterClientRpc();
