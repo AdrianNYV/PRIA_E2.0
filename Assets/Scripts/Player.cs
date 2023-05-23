@@ -1,14 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+using Unity.Netcode;
 
 public class Player : MonoBehaviour {
-    // Start is called before the first frame update
-    void Start() {
-        
+    public float speed = 5f;
+
+    private MeshRenderer meshRenderer;
+
+    void Awake() {
+        meshRenderer = GetComponent<MeshRenderer>();
     }
 
-    // Update is called once per frame
     void Update() {
         
     }
