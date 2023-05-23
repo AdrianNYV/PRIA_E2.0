@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour {
             StartButtons();
         } else {
             StatusLabels();
+            SubmitCentralPosition();
         }
         GUILayout.EndArea();
     }
@@ -24,5 +25,18 @@ public class GameManager : MonoBehaviour {
         var mode = NetworkManager.Singleton.IsHost ? "Host" : NetworkManager.Singleton.IsServer ? "Server" : "Client";
         GUILayout.Label("Transport: " + NetworkManager.Singleton.NetworkConfig.NetworkTransport.GetType().Name);
         GUILayout.Label("Mode: " + mode);
+    }
+
+    static void SubmitCentralPosition() {
+        if (GUILayout.Button(NetworkManager.Singleton.IsServer ? "Go To The Center" : "Request Go To The Center")) {
+            if (NetworkManager.Singleton.IsServer && !NetworkManager.Singleton.IsClient ) {
+                foreach (ulong uid in NetworkManager.Singleton.ConnectedClientsIds)
+                    NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(uid).GetComponent<Player>().MoveToCenterClientRpc();
+            } else {
+                var playerObject = NetworkManager.Singleton.SpawnManager.GetLocalPlayerObject();
+                var player = playerObject.GetComponent<Player>();
+                player.MoveToCenterClientRpc();
+            }
+        }
     }
 }

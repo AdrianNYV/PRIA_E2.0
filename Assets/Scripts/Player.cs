@@ -10,6 +10,8 @@ public class Player : NetworkBehaviour {
 
     private MeshRenderer meshRenderer; 
 
+    private Color notTeam = Color.white;
+
     void Awake() {
         meshRenderer = GetComponent<MeshRenderer>();
     }
@@ -39,6 +41,15 @@ public class Player : NetworkBehaviour {
         transform.position += dir * speed * Time.deltaTime;
     }
 
+    [ClientRpc]
+    public void MoveToCenterClientRpc() {
+        PositionZeroZero();
+    }
+
+    void PositionZeroZero() {
+        transform.position = new Vector3(0, 1, 0);
+    }
+
     void Update() {
         if(IsOwner) {
             if(Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)) {
@@ -53,6 +64,17 @@ public class Player : NetworkBehaviour {
             if(Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)) {
                 MoveServerRpc(Vector3.back);
             }
+            if(Input.GetKey(KeyCode.M)) {
+                PositionZeroZero();
+            }
+        }
+        
+        if(transform.position.x > 5f) {
+            meshRenderer.material.color = Color.blue;
+        } else if(transform.position.x < -5f) {
+            meshRenderer.material.color = Color.red;
+        } else {
+            meshRenderer.material.color = notTeam;
         }
     }
 }
