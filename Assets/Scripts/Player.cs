@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Unity.Netcode;
+using Random=UnityEngine.Random;
 
 public class Player : NetworkBehaviour {
     public float speed = 4f;
@@ -11,6 +12,26 @@ public class Player : NetworkBehaviour {
 
     void Awake() {
         meshRenderer = GetComponent<MeshRenderer>();
+    }
+
+    void Start() {
+        if (IsOwner) {
+            RandomSpawn();
+        }
+    }
+
+    public void RandomSpawn() {
+        if (NetworkManager.Singleton.IsServer) {
+            var randomPosition = new Vector3(Random.Range(-5f, 5f), 1f, Random.Range(-5f, 5f));;
+            transform.position = randomPosition;
+        } else {
+            SubmitPositionRequestServerRpc();
+        }
+    }
+
+    [ServerRpc]
+    void SubmitPositionRequestServerRpc() {
+        transform.position = new Vector3(Random.Range(-5f, 5f), 1f, Random.Range(-5f, 5f));;
     }
 
     [ServerRpc]
