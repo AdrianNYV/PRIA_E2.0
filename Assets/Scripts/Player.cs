@@ -31,7 +31,7 @@ public class Player : NetworkBehaviour {
     //Spawn Random de cada player al inicio
     public void RandomSpawn() {
         if (NetworkManager.Singleton.IsServer) {
-            var randomPosition = new Vector3(Random.Range(-5f, 5f), 1f, Random.Range(-5f, 5f));;
+            var randomPosition = new Vector3(Random.Range(-5f, 5f), 1f, Random.Range(-5f, 5f));
             transform.position = randomPosition;
         } else {
             SubmitPositionRequestServerRpc();
@@ -40,23 +40,23 @@ public class Player : NetworkBehaviour {
 
     [ServerRpc]
     void SubmitPositionRequestServerRpc() {
-        transform.position = new Vector3(Random.Range(-5f, 5f), 1f, Random.Range(-5f, 5f));;
+        transform.position = new Vector3(Random.Range(-5f, 5f), 1f, Random.Range(-5f, 5f));
+    }
+
+    //Mover a la parte central de forma random
+    [ClientRpc]
+    public void SubmitPositionRequestClientRpc() {
+        transform.position = RandomPosition();
+    }
+
+    static Vector3 RandomPosition() {
+        return new Vector3(Random.Range(-5f, 5f), 1f, Random.Range(-5f, 5f));
     }
 
     //Función de movimiento del Player
     [ServerRpc]
     void MoveServerRpc(Vector3 dir) {
         transform.position += dir * speed * Time.deltaTime;
-    }
-
-    //Posicionador al 0, 1, 0
-    [ClientRpc]
-    public void MoveToCenterClientRpc() {
-        PositionZeroZero();
-    }
-
-    public void PositionZeroZero() {
-        transform.position = new Vector3(0, 1, 0);
     }
 
     //Coloreador del Equipo Rojo
@@ -117,8 +117,8 @@ public class Player : NetworkBehaviour {
             if(Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)) {
                 MoveServerRpc(Vector3.back);
             }
-            if(Input.GetKey(KeyCode.M)) {
-                PositionZeroZero();
+            if(Input.GetKeyDown(KeyCode.M)) {
+                SubmitPositionRequestServerRpc();
             }
             if(inTeam == 0f) {
                 if(transform.position.x > 5f) {

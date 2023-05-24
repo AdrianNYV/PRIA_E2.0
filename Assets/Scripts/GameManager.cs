@@ -31,11 +31,11 @@ public class GameManager : MonoBehaviour {
         if (GUILayout.Button(NetworkManager.Singleton.IsServer ? "Mover al Inicio" : "Request Mover al Inicio")) {
             if (NetworkManager.Singleton.IsServer && !NetworkManager.Singleton.IsClient ) {
                 foreach (ulong uid in NetworkManager.Singleton.ConnectedClientsIds)
-                    NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(uid).GetComponent<Player>().PositionZeroZero();
+                    NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(uid).GetComponent<Player>().RandomSpawn();
             } else {
                 var playerObject = NetworkManager.Singleton.SpawnManager.GetLocalPlayerObject();
                 var player = playerObject.GetComponent<Player>();
-                player.MoveToCenterClientRpc();
+                player.SubmitPositionRequestClientRpc();
             }
         }
     }
