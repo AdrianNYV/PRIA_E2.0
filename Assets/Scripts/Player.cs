@@ -55,7 +55,7 @@ public class Player : NetworkBehaviour {
         PositionZeroZero();
     }
 
-    void PositionZeroZero() {
+    public void PositionZeroZero() {
         transform.position = new Vector3(0, 1, 0);
     }
 
@@ -125,7 +125,7 @@ public class Player : NetworkBehaviour {
                     inTeam = 1f;
                     ColorizedBlueServerRpc();
                 } else if(transform.position.x < -5f) {
-                    inTeam = 1f;
+                    inTeam = 2f;
                     ColorizedRedServerRpc();
                 } 
             }
@@ -133,6 +133,13 @@ public class Player : NetworkBehaviour {
                 meshRenderer.material.color = notTeam;
                 inTeam = 0f;
             }
+        }
+        //Comparador para sincronizar los colores de los Equipos
+        if (meshRenderer.material.color != teamBlueColors[PlayerIdColor.Value] && inTeam == 1f) {
+            meshRenderer.material.color = teamBlueColors[PlayerIdColor.Value];
+        }
+        if (meshRenderer.material.color != teamRedColors[PlayerIdColor.Value] && inTeam == 2f) {
+            meshRenderer.material.color = teamRedColors[PlayerIdColor.Value];
         }
     }
 }
