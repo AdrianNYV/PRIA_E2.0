@@ -12,7 +12,8 @@ public class Player : NetworkBehaviour {
 
     private Color notTeam = Color.white;
 
-    public NetworkVariable<int> PlayerIdColor;
+    public NetworkVariable<int> PlayerIdColorBlue;
+    public NetworkVariable<int> PlayerIdColorRed;
     private float inTeam = 0f;
 
     public List<Color> teamRedColors = new List<Color>();
@@ -65,20 +66,21 @@ public class Player : NetworkBehaviour {
         int idForTeamRedColor = ColorAcceptRed();
         idForTeamRedColor = ColorAcceptRed();
         meshRenderer.material.color = teamRedColors[idForTeamRedColor];
-        PlayerIdColor.Value = idForTeamRedColor;
+        PlayerIdColorRed.Value = idForTeamRedColor;
     }
 
     int ColorAcceptRed() {
-        int idColor;
-        bool sameColor;
-        List<int> colorsInUse = new List<int>();
+        int idColorRed;
+        bool sameColorRed;
+        List<int> redColorsInUse = new List<int>();
         foreach(ulong uid in NetworkManager.Singleton.ConnectedClientsIds) {
-            colorsInUse.Add(NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(uid).GetComponent<Player>().PlayerIdColor.Value);
-        } do {
-            idColor = Random.Range(0, teamRedColors.Count);
-            sameColor = colorsInUse.Contains(idColor);
-        } while (sameColor);
-        return idColor;
+            redColorsInUse.Add(NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(uid).GetComponent<Player>().PlayerIdColorRed.Value);
+        } 
+        do {
+            idColorRed = Random.Range(0, teamRedColors.Count);
+            sameColorRed = redColorsInUse.Contains(idColorRed);
+        } while (sameColorRed);
+        return idColorRed;
     } 
 
     //Coloreador del Equipo Azul
@@ -87,20 +89,20 @@ public class Player : NetworkBehaviour {
         int idForTeamBlueColor;
         idForTeamBlueColor = ColorAcceptBlue();
         meshRenderer.material.color = teamBlueColors[idForTeamBlueColor];
-        PlayerIdColor.Value = idForTeamBlueColor;
+        PlayerIdColorBlue.Value = idForTeamBlueColor;
     }
 
     int ColorAcceptBlue() {
-        int idColor;
-        bool sameColor;
-        List<int> colorsInUse = new List<int>();
+        int idColorBlue;
+        bool sameColorBlue;
+        List<int> blueColorsInUse = new List<int>();
         foreach(ulong uid in NetworkManager.Singleton.ConnectedClientsIds) {
-            colorsInUse.Add(NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(uid).GetComponent<Player>().PlayerIdColor.Value);
+            blueColorsInUse.Add(NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(uid).GetComponent<Player>().PlayerIdColorBlue.Value);
         } do {
-            idColor = Random.Range(0, teamBlueColors.Count);
-            sameColor = colorsInUse.Contains(idColor);
-        } while (sameColor);
-        return idColor;
+            idColorBlue = Random.Range(0, teamBlueColors.Count);
+            sameColorBlue = blueColorsInUse.Contains(idColorBlue);
+        } while (sameColorBlue);
+        return idColorBlue;
     }
 
     void Update() {
@@ -129,17 +131,17 @@ public class Player : NetworkBehaviour {
                     ColorizedRedServerRpc();
                 } 
             }
-            if (transform.position.x > -5f && transform.position.x < 5f) {
-                meshRenderer.material.color = notTeam;
-                inTeam = 0f;
-            }
         }
         //Comparador para sincronizar los colores de los Equipos
-        if (meshRenderer.material.color != teamBlueColors[PlayerIdColor.Value] && inTeam == 1f) {
-            meshRenderer.material.color = teamBlueColors[PlayerIdColor.Value];
+        if (meshRenderer.material.color != teamBlueColors[PlayerIdColorBlue.Value] && inTeam == 1f) {
+            meshRenderer.material.color = teamBlueColors[PlayerIdColorBlue.Value];
         }
-        if (meshRenderer.material.color != teamRedColors[PlayerIdColor.Value] && inTeam == 2f) {
-            meshRenderer.material.color = teamRedColors[PlayerIdColor.Value];
+        if (meshRenderer.material.color != teamRedColors[PlayerIdColorRed.Value] && inTeam == 2f) {
+            meshRenderer.material.color = teamRedColors[PlayerIdColorRed.Value];
+        }
+        if (transform.position.x > -5f && transform.position.x < 5f) {
+            meshRenderer.material.color = notTeam;
+            inTeam = 0f;
         }
     }
 }
