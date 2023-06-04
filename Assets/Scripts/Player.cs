@@ -76,9 +76,10 @@ public class Player : NetworkBehaviour {
         idForTeamRedColor = ColorAcceptRed();
         meshRenderer.material.color = teamRedColors[idForTeamRedColor];
         PlayerIdColorRed.Value = idForTeamRedColor;
+
         if (teamRedSize == maxSizeForATeam) {
-            ClientRpcParams clientRpcParams = new ClientRpcParams { Send = new ClientRpcSendParams { TargetClientIds = GetIdOfTheTeam(1) } };
-            RestricFreeMoveClientRpc();
+            ClientRpcParams clientRpcParams = new ClientRpcParams { Send = new ClientRpcSendParams { TargetClientIds = GetIdsOfTheTeam(1) } };
+            RestrictFreeMoveClientRpc();
         }
     }
 
@@ -119,7 +120,7 @@ public class Player : NetworkBehaviour {
     }
 
     //Lista de recogida de Ids de un Equipo 
-    List<ulong> GetIdOfTheTeam(int team) {
+    List<ulong> GetIdsOfTheTeam(int team) {
         List<ulong> idsTeam = new List<ulong>();
         foreach(ulong uid in NetworkManager.Singleton.ConnectedClientsIds) {
             if(NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(uid).GetComponent<Player>().inTeam == team) {
@@ -131,7 +132,19 @@ public class Player : NetworkBehaviour {
 
     //Restricción de movimiento si un equipo está lleno
     [ClientRpc]
-    private void RestricFreeMoveClientRpc() {
+    private void RestrictFreeMoveClientRpc(ClientRpcParams clientRpcParams = default) {
+        List<ulong> idsOfTeamInQuestion = (List<ulong>)clientRpcParams.Send.TargetClientIds;
+        if(idsOfTeamInQuestion == null) {
+            return;
+        } 
+        if(! idsOfTeamInQuestion.Contains(NetworkObjectId)) {
+            freeMove = false;
+        }
+    }
+
+    //Liberación del Movimiento para volver a freeMove
+    [ClientRpc]
+    private void FreeMoveClientRpc() {
 
     }
 
