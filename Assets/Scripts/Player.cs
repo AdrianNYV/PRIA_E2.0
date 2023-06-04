@@ -19,8 +19,14 @@ public class Player : NetworkBehaviour {
     public List<Color> teamRedColors = new List<Color>();
     public List<Color> teamBlueColors = new List<Color>();
 
+    private bool freeMove;
+    private int teamRedSize = 0;
+    private int teamBlueSize = 0;
+    private int maxSizeForATeam = 2;
+
     void Awake() {
         meshRenderer = GetComponent<MeshRenderer>();
+        freeMove = true;
     }
 
     void Start() {
@@ -47,7 +53,9 @@ public class Player : NetworkBehaviour {
     //Mover a la parte central de forma random, si es Client
     [ServerRpc]
     public void SubmitPositionRequestServerRpc() {
-        transform.position = RandomPosition();
+        if(freeMove) {
+            transform.position = RandomPosition();
+        }
     }
 
     static Vector3 RandomPosition() {
@@ -106,7 +114,7 @@ public class Player : NetworkBehaviour {
     }
 
     void Update() {
-        if(IsOwner) {
+        if(IsOwner && freeMove) {
             if(Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)) {
                 MoveServerRpc(Vector3.right);
             }
