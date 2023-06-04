@@ -71,10 +71,15 @@ public class Player : NetworkBehaviour {
     //Coloreador del Equipo Rojo
     [ServerRpc]
     void ColorizedRedServerRpc() {
+        teamRedSize++;
         int idForTeamRedColor = ColorAcceptRed();
         idForTeamRedColor = ColorAcceptRed();
         meshRenderer.material.color = teamRedColors[idForTeamRedColor];
         PlayerIdColorRed.Value = idForTeamRedColor;
+        if (teamRedSize == maxSizeForATeam) {
+            ClientRpcParams clientRpcParams = new ClientRpcParams { Send = new ClientRpcSendParams { TargetClientIds = GetIdOfTheTeam(1) } };
+            RestricFreeMoveClientRpc();
+        }
     }
 
     int ColorAcceptRed() {
@@ -111,6 +116,23 @@ public class Player : NetworkBehaviour {
             sameColorBlue = blueColorsInUse.Contains(idColorBlue);
         } while (sameColorBlue);
         return idColorBlue;
+    }
+
+    //Lista de recogida de Ids de un Equipo 
+    List<ulong> GetIdOfTheTeam(int team) {
+        List<ulong> idsTeam = new List<ulong>();
+        foreach(ulong uid in NetworkManager.Singleton.ConnectedClientsIds) {
+            if(NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(uid).GetComponent<Player>().inTeam == team) {
+                idsTeam.Add(uid);
+            }
+        }
+        return idsTeam;
+    }
+
+    //Restricción de movimiento si un equipo está lleno
+    [ClientRpc]
+    private void RestricFreeMoveClientRpc() {
+
     }
 
     void Update() {
