@@ -39,14 +39,14 @@ public class Player : NetworkBehaviour {
         }
     }
 
-    [ServerRpc]
-    void SubmitPositionRequestServerRpc() {
+    //Botón de Game Manager para tp a la zona blanca, si es el Server/Host
+    public void MoveToZoneNotTeam() {
         transform.position = new Vector3(Random.Range(-5f, 5f), 1f, Random.Range(-5f, 5f));
     }
 
-    //Mover a la parte central de forma random
-    [ClientRpc]
-    public void SubmitPositionRequestClientRpc() {
+    //Mover a la parte central de forma random, si es Client
+    [ServerRpc]
+    public void SubmitPositionRequestServerRpc() {
         transform.position = RandomPosition();
     }
 
