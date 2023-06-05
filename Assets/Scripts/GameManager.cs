@@ -4,6 +4,11 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
+    public static GameManager instance;
+
+    public NetworkVariable<int> redTeamPlayers;
+    public NetworkVariable<int> blueTeamPlayers;
+    
     void OnGUI() {
         GUILayout.BeginArea(new Rect(10, 10, 300, 300));
         if (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsServer) {

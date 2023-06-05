@@ -19,21 +19,12 @@ public class Player : NetworkBehaviour {
     public List<Color> teamRedColors = new List<Color>();
     public List<Color> teamBlueColors = new List<Color>();
 
-    private bool freeMove;
-    public NetworkVariable<bool> isFreeMoveActive;
-    private int teamRedSize = 0;
-    private int teamBlueSize = 0;
+    public NetworkVariable<bool> isFreeMoveActive = new NetworkVariable<bool>();
+    public NetworkVariable<int> inTeamNumber = new NetworkVariable<int>();
     private int maxSizeForATeam = 2;
 
     void Awake() {
         meshRenderer = GetComponent<MeshRenderer>();
-        freeMove = true;
-    }
-
-    public override void OnNetworkSpawn() {
-        if(IsOwner) {
-            ChangeTheFreeMoveServerRpc(true);
-        }
     }
 
     void Start() {
@@ -60,9 +51,9 @@ public class Player : NetworkBehaviour {
     //Mover a la parte central de forma random, si es Client
     [ServerRpc]
     public void SubmitPositionRequestServerRpc() {
-        if(freeMove) {
+        //if() {
             transform.position = RandomPosition();
-        }
+        //}
     }
 
     static Vector3 RandomPosition() {
@@ -78,7 +69,6 @@ public class Player : NetworkBehaviour {
     //Coloreador del Equipo Rojo
     [ServerRpc]
     void ColorizedRedServerRpc() {
-        teamRedSize++;
         int idForTeamRedColor = ColorAcceptRed();
         idForTeamRedColor = ColorAcceptRed();
         meshRenderer.material.color = teamRedColors[idForTeamRedColor];
@@ -102,7 +92,6 @@ public class Player : NetworkBehaviour {
     //Coloreador del Equipo Azul
     [ServerRpc]
     void ColorizedBlueServerRpc() {
-        teamBlueSize++;
         int idForTeamBlueColor;
         idForTeamBlueColor = ColorAcceptBlue();
         meshRenderer.material.color = teamBlueColors[idForTeamBlueColor];
@@ -122,27 +111,10 @@ public class Player : NetworkBehaviour {
         return idColorBlue;
     }
 
-    //Lista de recogida de Ids de un Equipo 
-    List<ulong> GetIdsOfTheTeam(int team) {
-        List<ulong> idsTeam = new List<ulong>();
-        foreach(ulong uid in NetworkManager.Singleton.ConnectedClientsIds) {
-            if(NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(uid).GetComponent<Player>().inTeam == team) {
-                idsTeam.Add(uid);
-            }
-        }
-        return idsTeam;
-    }
-
     //Restricción de movimiento si un equipo está lleno
-    
-
-    [ServerRpc]
-    void ChangeTheFreeMoveServerRpc(bool canMove) {
-        isFreeMoveActive.Value = canMove;
-    }
 
     void Update() {
-        if(IsOwner && isFreeMoveActive.Value == true) {
+        if(IsOwner) {
             if(Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)) {
                 MoveServerRpc(Vector3.right);
             }
