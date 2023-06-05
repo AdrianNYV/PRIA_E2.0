@@ -20,6 +20,7 @@ public class Player : NetworkBehaviour {
     public List<Color> teamBlueColors = new List<Color>();
 
     private bool freeMove;
+    public NetworkVariable<bool> isFreeMoveActive;
     private int teamRedSize = 0;
     private int teamBlueSize = 0;
     private int maxSizeForATeam = 2;
@@ -27,6 +28,12 @@ public class Player : NetworkBehaviour {
     void Awake() {
         meshRenderer = GetComponent<MeshRenderer>();
         freeMove = true;
+    }
+
+    public override void OnNetworkSpawn() {
+        if(IsOwner) {
+            ChangeTheFreeMoveServerRpc(true);
+        }
     }
 
     void Start() {
@@ -76,11 +83,6 @@ public class Player : NetworkBehaviour {
         idForTeamRedColor = ColorAcceptRed();
         meshRenderer.material.color = teamRedColors[idForTeamRedColor];
         PlayerIdColorRed.Value = idForTeamRedColor;
-
-        if (teamRedSize == maxSizeForATeam) {
-            ClientRpcParams clientRpcParams = new ClientRpcParams { Send = new ClientRpcSendParams { TargetClientIds = GetIdsOfTheTeam(1) } };
-            RestrictFreeMoveClientRpc();
-        }
     }
 
     int ColorAcceptRed() {
@@ -100,6 +102,7 @@ public class Player : NetworkBehaviour {
     //Coloreador del Equipo Azul
     [ServerRpc]
     void ColorizedBlueServerRpc() {
+        teamBlueSize++;
         int idForTeamBlueColor;
         idForTeamBlueColor = ColorAcceptBlue();
         meshRenderer.material.color = teamBlueColors[idForTeamBlueColor];
@@ -131,25 +134,15 @@ public class Player : NetworkBehaviour {
     }
 
     //Restricción de movimiento si un equipo está lleno
-    [ClientRpc]
-    private void RestrictFreeMoveClientRpc(ClientRpcParams clientRpcParams = default) {
-        List<ulong> idsOfTeamInQuestion = (List<ulong>)clientRpcParams.Send.TargetClientIds;
-        if(idsOfTeamInQuestion == null) {
-            return;
-        } 
-        if(! idsOfTeamInQuestion.Contains(NetworkObjectId)) {
-            freeMove = false;
-        }
-    }
+    
 
-    //Liberación del Movimiento para volver a freeMove
-    [ClientRpc]
-    private void FreeMoveClientRpc() {
-
+    [ServerRpc]
+    void ChangeTheFreeMoveServerRpc(bool canMove) {
+        isFreeMoveActive.Value = canMove;
     }
 
     void Update() {
-        if(IsOwner && freeMove) {
+        if(IsOwner && isFreeMoveActive.Value == true) {
             if(Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)) {
                 MoveServerRpc(Vector3.right);
             }
