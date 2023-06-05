@@ -18,18 +18,18 @@ public class Player : NetworkBehaviour {
 
     public List<Color> teamRedColors = new List<Color>();
     public List<Color> teamBlueColors = new List<Color>();
-
+    /*
     private bool freeMove;
     public NetworkVariable<bool> isFreeMoveActive = new NetworkVariable<bool>();
     public NetworkVariable<int> inTeamNumber = new NetworkVariable<int>();
     public int maxSizeForATeam = 2;
-
+    */
     void Awake() {
         meshRenderer = GetComponent<MeshRenderer>();
     }
 
     public override void OnNetworkSpawn() {
-        isFreeMoveActive.Value = true;
+        //isFreeMoveActive.Value = true;
     }
 
     void Start() {
@@ -74,7 +74,7 @@ public class Player : NetworkBehaviour {
     //Coloreador del Equipo Rojo
     [ServerRpc]
     void ColorizedRedServerRpc() {
-        GameManager.instance.redTeamPlayers.Value++;
+        //GameManager.instance.redTeamPlayers.Value++;
         int idForTeamRedColor;
         idForTeamRedColor = ColorAcceptRed();
         meshRenderer.material.color = teamRedColors[idForTeamRedColor];
@@ -88,6 +88,7 @@ public class Player : NetworkBehaviour {
         foreach(ulong uid in NetworkManager.Singleton.ConnectedClientsIds) {
             redColorsInUse.Add(NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(uid).GetComponent<Player>().PlayerIdColorRed.Value);
         } 
+        //TODO Encontrar como hace el bucle infinito aquí
         do {
             idColorRed = Random.Range(0, teamRedColors.Count);
             sameColorRed = redColorsInUse.Contains(idColorRed);
@@ -98,7 +99,7 @@ public class Player : NetworkBehaviour {
     //Coloreador del Equipo Azul
     [ServerRpc]
     void ColorizedBlueServerRpc() {
-        GameManager.instance.blueTeamPlayers.Value++;
+        //GameManager.instance.blueTeamPlayers.Value++;
         int idForTeamBlueColor;
         idForTeamBlueColor = ColorAcceptBlue();
         meshRenderer.material.color = teamBlueColors[idForTeamBlueColor];
@@ -111,14 +112,17 @@ public class Player : NetworkBehaviour {
         List<int> blueColorsInUse = new List<int>();
         foreach(ulong uid in NetworkManager.Singleton.ConnectedClientsIds) {
             blueColorsInUse.Add(NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(uid).GetComponent<Player>().PlayerIdColorBlue.Value);
-        } do {
+        } 
+        /*do {
             idColorBlue = Random.Range(0, teamBlueColors.Count);
             sameColorBlue = blueColorsInUse.Contains(idColorBlue);
-        } while (sameColorBlue);
+        } while (sameColorBlue);*/
+        idColorBlue = 1;
         return idColorBlue;
     }
 
     //Restricción de movimiento si un equipo está lleno
+    /*
     [ClientRpc]
     public void SetFreeMoveClientRpc(bool freeMove, ClientRpcParams clientRpc) {
         SetToFreeMoveServerRpc(freeMove);
@@ -128,10 +132,11 @@ public class Player : NetworkBehaviour {
     public void SetToFreeMoveServerRpc(bool canMove) {
         isFreeMoveActive.Value = canMove;
     }
+    */
 
     void Update() {
-        freeMove = isFreeMoveActive.Value;
-        if(IsOwner && freeMove) {
+        //freeMove = isFreeMoveActive.Value;
+        if(IsOwner /*&& freeMove*/) {
             if(Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)) {
                 MoveServerRpc(Vector3.right);
             }
@@ -166,11 +171,11 @@ public class Player : NetworkBehaviour {
         }
         if (transform.position.x > -5f && transform.position.x < 5f) {
             meshRenderer.material.color = notTeam;
-            if(inTeamNumber.Value == 1) {
+            /*if(inTeamNumber.Value == 1) {
                 GameManager.instance.redTeamPlayers.Value--;
             } else if(inTeamNumber.Value == 2) {
                 GameManager.instance.blueTeamPlayers.Value--;
-            }
+            }*/
             inTeam = 0f;
         }
     }

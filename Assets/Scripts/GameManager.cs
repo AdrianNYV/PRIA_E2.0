@@ -5,18 +5,18 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
     public static GameManager instance;
-
+    /*
     public NetworkVariable<int> redTeamPlayers = new NetworkVariable<int>();
     public NetworkVariable<int> blueTeamPlayers = new NetworkVariable<int>();
     public NetworkVariable<int>  someTeamIsFull = new NetworkVariable<int>();
     public int maxSizeForATeamGameManager = 2;
-
+    */
     void Awake() {
         instance = this;
     }
 
     void Start() {
-        someTeamIsFull.Value = 0;
+        //someTeamIsFull.Value = 0;
     }
     
     void OnGUI() {
@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour {
             }
         }
     }
-
+    /*
     public void CheckIfOneTeamIsFull() {
         if(redTeamPlayers.Value >= maxSizeForATeamGameManager) {
             someTeamIsFull.Value = 1;
@@ -82,4 +82,5 @@ public class GameManager : MonoBehaviour {
             }
         }
     }
+    */
 }
