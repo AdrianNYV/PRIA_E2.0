@@ -6,6 +6,8 @@ using Unity.Netcode;
 using Random=UnityEngine.Random;
 
 public class Player : NetworkBehaviour {
+    public static Player instance;
+
     public float speed = 4f;
 
     private MeshRenderer meshRenderer; 
@@ -19,12 +21,18 @@ public class Player : NetworkBehaviour {
     public List<Color> teamRedColors = new List<Color>();
     public List<Color> teamBlueColors = new List<Color>();
 
+    private bool freeMove;
     public NetworkVariable<bool> isFreeMoveActive = new NetworkVariable<bool>();
     public NetworkVariable<int> inTeamNumber = new NetworkVariable<int>();
-    private int maxSizeForATeam = 2;
+    public int maxSizeForATeam = 2;
 
     void Awake() {
+        instance = this;
         meshRenderer = GetComponent<MeshRenderer>();
+    }
+
+    public override void OnNetworkSpawn() {
+        isFreeMoveActive.Value = true;
     }
 
     void Start() {
@@ -69,7 +77,8 @@ public class Player : NetworkBehaviour {
     //Coloreador del Equipo Rojo
     [ServerRpc]
     void ColorizedRedServerRpc() {
-        int idForTeamRedColor = ColorAcceptRed();
+        GameManager.instance.redTeamPlayers.Value++;
+        int idForTeamRedColor;
         idForTeamRedColor = ColorAcceptRed();
         meshRenderer.material.color = teamRedColors[idForTeamRedColor];
         PlayerIdColorRed.Value = idForTeamRedColor;
@@ -92,6 +101,7 @@ public class Player : NetworkBehaviour {
     //Coloreador del Equipo Azul
     [ServerRpc]
     void ColorizedBlueServerRpc() {
+        GameManager.instance.blueTeamPlayers.Value++;
         int idForTeamBlueColor;
         idForTeamBlueColor = ColorAcceptBlue();
         meshRenderer.material.color = teamBlueColors[idForTeamBlueColor];
@@ -112,9 +122,19 @@ public class Player : NetworkBehaviour {
     }
 
     //Restricción de movimiento si un equipo está lleno
+    [ClientRpc]
+    public void SetFreeMoveClientRpc(bool freeMove, ClientRpcParams clientRpc) {
+        SetToFreeMoveServerRpc(freeMove);
+    }
+
+    [ServerRpc]
+    public void SetToFreeMoveServerRpc(bool canMove) {
+        isFreeMoveActive.Value = canMove;
+    }
 
     void Update() {
-        if(IsOwner) {
+        freeMove = isFreeMoveActive.Value;
+        if(IsOwner && freeMove) {
             if(Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)) {
                 MoveServerRpc(Vector3.right);
             }
@@ -149,6 +169,11 @@ public class Player : NetworkBehaviour {
         }
         if (transform.position.x > -5f && transform.position.x < 5f) {
             meshRenderer.material.color = notTeam;
+            if(inTeamNumber.Value == 1) {
+                GameManager.instance.redTeamPlayers.Value--;
+            } else if(inTeamNumber.Value == 2) {
+                GameManager.instance.blueTeamPlayers.Value--;
+            }
             inTeam = 0f;
         }
     }
