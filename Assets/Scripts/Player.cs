@@ -6,8 +6,6 @@ using Unity.Netcode;
 using Random=UnityEngine.Random;
 
 public class Player : NetworkBehaviour {
-    public static Player instance;
-
     public float speed = 4f;
 
     private MeshRenderer meshRenderer; 
@@ -27,7 +25,6 @@ public class Player : NetworkBehaviour {
     public int maxSizeForATeam = 2;
 
     void Awake() {
-        instance = this;
         meshRenderer = GetComponent<MeshRenderer>();
     }
 
